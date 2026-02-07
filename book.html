@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Shiloh’s Kuromi Diary</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Comic+Neue&family=Patrick+Hand&family=Indie+Flower&display=swap');
+
+body {
+  background: linear-gradient(135deg, #2b0033, #4b0066);
+  font-family: Comic Neue, cursive;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: white;
+}
+
+.app {
+  background: #1a001f;
+  width: 380px;
+  border-radius: 25px;
+  padding: 14px;
+  box-shadow: 0 0 25px #9b59b6;
+  text-align: center;
+  position: relative;
+}
+
+h1 { color: #d7b3ff; margin: 4px 0; }
+
+.kuromi-img {
+  width: 120px;
+  margin: 6px auto;
+}
+
+textarea, select, input, button {
+  width: 100%;
+  margin-top: 6px;
+  padding: 6px;
+  border-radius: 12px;
+  background: #2b0033;
+  color: white;
+  border: 2px solid #9b59b6;
+}
+
+textarea { height: 80px; resize: none; }
+
+canvas {
+  background: #2b0033;
+  border: 2px solid #9b59b6;
+  border-radius: 12px;
+  margin-top: 6px;
+}
+
+button {
+  background: #9b59b6;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover { background: #c77dff; }
+
+.hidden { display: none; }
+
+.stickers {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 6px;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+.sparkle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+  animation: sparkle 0.8s forwards;
+}
+
+@keyframes sparkle {
+  to { transform: scale(2); opacity: 0; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app" id="app">
+  <h1>💜 Shiloh’s Diary 😈</h1>
+
+  <img class="kuromi-img"
+    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjIUu3KXaj-IxHnhOw5x4j40_4ivr8oa5nDA&s">
+
+  <!-- LOCK -->
+  <div id="lock">
+    <input type="password" id="pass" placeholder="Password">
+    <button onclick="unlock()">Unlock 🔒</button>
+    <p id="error"></p>
+  </div>
+
+  <!-- DIARY -->
+  <div id="diary" class="hidden">
+    <select id="fontPicker" onchange="changeFont()">
+      <option value="Comic Neue">Comic</option>
+      <option value="Patrick Hand">Handwriting</option>
+      <option value="Indie Flower">Cute</option>
+    </select>
+
+    <textarea id="text" placeholder="Dear Diary... 💜😈"></textarea>
+
+    <input type="color" id="colorPicker" value="#c77dff">
+
+    <!-- STICKERS -->
+    <div class="stickers">
+      <span onclick="addSticker('🧸')">🧸</span>
+      <span onclick="addSticker('💀')">💀</span>
+      <span onclick="addSticker('💜')">💜</span>
+      <span onclick="addSticker('⭐')">⭐</span>
+    </div>
+
+    <!-- DRAWING -->
+    <canvas id="draw" width="320" height="150"></canvas>
+
+    <button onclick="clearCanvas()">🧽 Clear</button>
+    <button onclick="save()">Save ✨</button>
+    <button onclick="lockDiary()">🔒 Lock</button>
+  </div>
+</div>
+
+<script>
+const PASS = "kuromi";
+
+const canvas = document.getElementById("draw");
+const ctx = canvas.getContext("2d");
+ctx.lineWidth = 4;
+ctx.lineCap = "round";
+ctx.strokeStyle = "#c77dff";
+
+let drawing = false;
+
+canvas.onpointerdown = e => {
+  drawing = true;
+  ctx.beginPath();
+  ctx.moveTo(e.offsetX, e.offsetY);
+};
+
+canvas.onpointermove = e => {
+  if (!drawing) return;
+  ctx.lineTo(e.offsetX, e.offsetY);
+  ctx.stroke();
+};
+
+canvas.onpointerup = () => drawing = false;
+
+document.getElementById("colorPicker").oninput =
+  e => ctx.strokeStyle = e.target.value;
+
+/* TAB SPACE */
+text.addEventListener("keydown", e => {
+  if (e.key === "Tab") {
+    e.preventDefault();
+    const s = text.selectionStart;
+    text.value =
+      text.value.substring(0, s) + "    " +
+      text.value.substring(text.selectionEnd);
+    text.selectionStart = text.selectionEnd = s + 4;
+  }
+});
+
+function unlock() {
+  if (pass.value === PASS) {
+    lock.classList.add("hidden");
+    diary.classList.remove("hidden");
+  } else error.innerText = "Wrong password 😈";
+}
+
+function lockDiary() {
+  diary.classList.add("hidden");
+  lock.classList.remove("hidden");
+  pass.value = "";
+}
+
+function changeFont() {
+  text.style.fontFamily = fontPicker.value;
+}
+
+/* STICKERS */
+function addSticker(emoji) {
+  ctx.font = "28px serif";
+  ctx.fillText(
+    emoji,
+    Math.random() * (canvas.width - 30),
+    Math.random() * (canvas.height - 10)
+  );
+}
+
+/* SAVE SPARKLES */
+function save() {
+  for (let i = 0; i < 10; i++) {
+    const s = document.createElement("div");
+    s.className = "sparkle";
+    s.style.left = Math.random() * 100 + "%";
+    s.style.top = Math.random() * 100 + "%";
+    app.appendChild(s);
+    setTimeout(() => s.remove(), 800);
+  }
+}
+
+function clearCanvas() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+}
+</script>
+
+</body>
+</html>
